@@ -40,12 +40,12 @@ CREATE TABLE IF NOT EXISTS attendance (
 // API Routes
 app.use("/api/attendance", attendanceRoutes);
 
-// Serve frontend
-app.use(express.static(path.join(__dirname, "../frontend/build")));
+// Serve frontend build
+app.use(express.static(path.join(__dirname, "build")));
 
 // Catch-all route for React (Express 5 safe)
-app.use((req, res) => {
-  res.sendFile(path.join(__dirname, "../frontend/build/index.html"));
+app.all(/.*/, (req, res) => {
+  res.sendFile(path.join(__dirname, "build/index.html"));
 });
 
 // Start server
