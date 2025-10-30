@@ -1,7 +1,6 @@
-// routes/attendance.js
-import express from "express";
-import pool from "../db.js"; // make sure db.js uses pg
-
+// backend/routes/attendance.js
+const express = require("express");
+const pool = require("../db");
 const router = express.Router();
 
 // Add Attendance
@@ -34,7 +33,7 @@ router.get("/", async (req, res) => {
   }
 });
 
-// Delete Attendance by ID
+// Delete Attendance
 router.delete("/:id", async (req, res) => {
   try {
     const { id } = req.params;
@@ -47,4 +46,4 @@ router.delete("/:id", async (req, res) => {
   }
 });
 
-export default router;
+module.exports = router;
