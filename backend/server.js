@@ -1,15 +1,17 @@
-// backend/server.js
+// server.js
 import express from "express";
 import cors from "cors";
 import path from "path";
 import { fileURLToPath } from "url";
 import dotenv from "dotenv";
-import pool from "./db.js";
 import attendanceRoutes from "./routes/attendance.js";
+import pool from "./db.js";
 
 dotenv.config();
 
 const app = express();
+
+// For __dirname in ES Modules
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -17,7 +19,12 @@ const __dirname = path.dirname(__filename);
 app.use(cors());
 app.use(express.json());
 
-// Auto-create attendance table if it doesn't exist
+// Test DB connection
+pool.connect()
+  .then(() => console.log("Database connected successfully!"))
+  .catch(err => console.error("Database connection failed:", err));
+
+// Auto-create attendance table
 pool.query(`
 CREATE TABLE IF NOT EXISTS attendance (
     id SERIAL PRIMARY KEY,
@@ -30,14 +37,15 @@ CREATE TABLE IF NOT EXISTS attendance (
 .then(() => console.log("Attendance table is ready"))
 .catch(err => console.error("Error creating attendance table:", err));
 
-// API routes
+// API Routes
 app.use("/api/attendance", attendanceRoutes);
 
 // Serve frontend
 app.use(express.static(path.join(__dirname, "../frontend/build")));
 
-app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "../frontend/build", "index.html"));
+// Catch-all route for React (Express 5 safe)
+app.use((req, res) => {
+  res.sendFile(path.join(__dirname, "../frontend/build/index.html"));
 });
 
 // Start server
