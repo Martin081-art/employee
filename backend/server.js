@@ -1,22 +1,23 @@
-const express = require("express");
-const cors = require("cors");
-const path = require("path");
-const attendanceRoutes = require("./routes/attendance");
-const pool = require("./db");
-require("dotenv").config();
+// backend/server.js
+import express from "express";
+import cors from "cors";
+import path from "path";
+import { fileURLToPath } from "url";
+import dotenv from "dotenv";
+import pool from "./db.js";
+import attendanceRoutes from "./routes/attendance.js";
+
+dotenv.config();
 
 const app = express();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // Middleware
 app.use(cors());
 app.use(express.json());
 
-// Test database connection
-pool.query('SELECT NOW()')
-  .then(() => console.log("Database connected successfully!"))
-  .catch(err => console.error("Database connection failed:", err));
-
-// Auto-create attendance table
+// Auto-create attendance table if it doesn't exist
 pool.query(`
 CREATE TABLE IF NOT EXISTS attendance (
     id SERIAL PRIMARY KEY,
@@ -29,7 +30,7 @@ CREATE TABLE IF NOT EXISTS attendance (
 .then(() => console.log("Attendance table is ready"))
 .catch(err => console.error("Error creating attendance table:", err));
 
-// API Routes
+// API routes
 app.use("/api/attendance", attendanceRoutes);
 
 // Serve frontend

@@ -1,6 +1,7 @@
 // backend/routes/attendance.js
-const express = require("express");
-const pool = require("../db");
+import express from "express";
+import pool from "../db.js";
+
 const router = express.Router();
 
 // Add Attendance
@@ -12,9 +13,11 @@ router.post("/", async (req, res) => {
     }
 
     const result = await pool.query(
-      'INSERT INTO attendance ("employeeName","employeeID","date","status") VALUES ($1,$2,$3,$4) RETURNING id',
+      `INSERT INTO attendance ("employeeName","employeeID","date","status") 
+       VALUES ($1, $2, $3, $4) RETURNING id`,
       [employeeName, employeeID, date, status]
     );
+
     res.json({ message: "Attendance added successfully!", id: result.rows[0].id });
   } catch (err) {
     console.error(err);
@@ -33,7 +36,7 @@ router.get("/", async (req, res) => {
   }
 });
 
-// Delete Attendance
+// Delete Attendance by ID
 router.delete("/:id", async (req, res) => {
   try {
     const { id } = req.params;
@@ -46,4 +49,4 @@ router.delete("/:id", async (req, res) => {
   }
 });
 
-module.exports = router;
+export default router;
