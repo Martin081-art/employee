@@ -1,38 +1,50 @@
-const express = require('express');
+// routes/attendance.js
+import express from "express";
+import pool from "../db.js"; // make sure db.js uses pg
+
 const router = express.Router();
-const db = require('../db');
 
 // Add Attendance
-router.post('/', (req, res) => {
-  const { employeeName, employeeID, date, status } = req.body;
-  if (!employeeName || !employeeID || !date || !status) {
-    return res.status(400).json({ error: "All fields are required" });
-  }
+router.post("/", async (req, res) => {
+  try {
+    const { employeeName, employeeID, date, status } = req.body;
+    if (!employeeName || !employeeID || !date || !status) {
+      return res.status(400).json({ error: "All fields are required" });
+    }
 
-  const sql = "INSERT INTO Attendance (employeeName, employeeID, date, status) VALUES (?, ?, ?, ?)";
-  db.query(sql, [employeeName, employeeID, date, status], (err, result) => {
-    if (err) return res.status(500).json({ error: err });
-    res.json({ message: "Attendance added successfully!", id: result.insertId });
-  });
+    const result = await pool.query(
+      'INSERT INTO attendance ("employeeName","employeeID","date","status") VALUES ($1,$2,$3,$4) RETURNING id',
+      [employeeName, employeeID, date, status]
+    );
+    res.json({ message: "Attendance added successfully!", id: result.rows[0].id });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Server error" });
+  }
 });
 
 // Get All Attendance
-router.get('/', (req, res) => {
-  const sql = "SELECT * FROM Attendance ORDER BY date DESC";
-  db.query(sql, (err, results) => {
-    if (err) return res.status(500).json({ error: err });
-    res.json(results);
-  });
-});
-// Delete Attendance by ID
-router.delete('/:id', (req, res) => {
-  const { id } = req.params;
-  const sql = "DELETE FROM Attendance WHERE id = ?";
-  db.query(sql, [id], (err, result) => {
-    if (err) return res.status(500).json({ error: err });
-    if (result.affectedRows === 0) return res.status(404).json({ message: "Record not found" });
-    res.json({ message: "Attendance record deleted successfully" });
-  });
+router.get("/", async (req, res) => {
+  try {
+    const result = await pool.query('SELECT * FROM attendance ORDER BY date DESC');
+    res.json(result.rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Server error" });
+  }
 });
 
-module.exports = router;
+// Delete Attendance by ID
+router.delete("/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const result = await pool.query('DELETE FROM attendance WHERE id = $1', [id]);
+    if (result.rowCount === 0) return res.status(404).json({ message: "Record not found" });
+    res.json({ message: "Attendance record deleted successfully" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
+export default router;

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
+import "./../styles/app.css";
 
-const AttendanceDashboard = ({ records, fetchAttendance }) => {
+const AttendanceDashboard = ({ records, fetchAttendance, apiUrl }) => {
   const [search, setSearch] = useState("");
   const [filterDate, setFilterDate] = useState("");
 
@@ -15,7 +16,7 @@ const AttendanceDashboard = ({ records, fetchAttendance }) => {
   const handleDelete = async (id) => {
     if (!window.confirm("Are you sure you want to delete this record?")) return;
     try {
-      const res = await fetch(`http://localhost:5000/api/attendance/${id}`, {
+      const res = await fetch(`${apiUrl}/attendance/${id}`, {
         method: "DELETE",
       });
       const data = await res.json();
@@ -27,7 +28,7 @@ const AttendanceDashboard = ({ records, fetchAttendance }) => {
   };
 
   return (
-    <div>
+    <div className="attendance-dashboard">
       <h2>Attendance Records</h2>
 
       <div className="filter-container">
@@ -44,7 +45,7 @@ const AttendanceDashboard = ({ records, fetchAttendance }) => {
         />
       </div>
 
-      <table border="1" cellPadding="5" cellSpacing="0">
+      <table>
         <thead>
           <tr>
             <th>Name</th>
@@ -69,7 +70,9 @@ const AttendanceDashboard = ({ records, fetchAttendance }) => {
                   {r.status}
                 </td>
                 <td>
-                  <button className="delete-btn" onClick={() => handleDelete(r.id)}>Delete</button>
+                  <button className="delete-btn" onClick={() => handleDelete(r.id)}>
+                    Delete
+                  </button>
                 </td>
               </tr>
             ))

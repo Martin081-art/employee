@@ -6,9 +6,12 @@ import "./styles/app.css";
 function App() {
   const [records, setRecords] = useState([]);
 
+  // Replace with your deployed backend API URL
+  const apiUrl = "https://employee-4hcd.onrender.com/api";
+
   const fetchAttendance = async () => {
     try {
-      const res = await fetch("http://localhost:5000/api/attendance");
+      const res = await fetch(`${apiUrl}/attendance`);
       const data = await res.json();
       setRecords(data);
     } catch (error) {
@@ -25,10 +28,10 @@ function App() {
       <h1>Employee Attendance Tracker</h1>
       <div className="flex-container">
         <div className="flex-item">
-          <AttendanceForm fetchAttendance={fetchAttendance} />
+          <AttendanceForm fetchAttendance={fetchAttendance} apiUrl={apiUrl} />
         </div>
         <div className="flex-item table-wrapper">
-          <AttendanceDashboard records={records} fetchAttendance={fetchAttendance} />
+          <AttendanceDashboard records={records} fetchAttendance={fetchAttendance} apiUrl={apiUrl} />
         </div>
       </div>
     </div>

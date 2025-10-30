@@ -1,6 +1,7 @@
 import React, { useState } from "react";
+import "./../styles/app.css";
 
-const AttendanceForm = ({ fetchAttendance }) => {
+const AttendanceForm = ({ fetchAttendance, apiUrl }) => {
   const [employeeName, setEmployeeName] = useState("");
   const [employeeID, setEmployeeID] = useState("");
   const [date, setDate] = useState("");
@@ -11,7 +12,7 @@ const AttendanceForm = ({ fetchAttendance }) => {
     if (!employeeName || !employeeID || !date) return alert("Fill all fields");
 
     try {
-      const res = await fetch("http://localhost:5000/api/attendance", {
+      const res = await fetch(`${apiUrl}/attendance`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ employeeName, employeeID, date, status }),
@@ -29,7 +30,8 @@ const AttendanceForm = ({ fetchAttendance }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form className="attendance-form" onSubmit={handleSubmit}>
+      <h2>Add Attendance</h2>
       <input
         placeholder="Employee Name"
         value={employeeName}
