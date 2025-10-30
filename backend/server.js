@@ -11,8 +11,8 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Database connection test
-pool.connect()
+// Test database connection with a simple query
+pool.query('SELECT NOW()')
   .then(() => console.log("Database connected successfully!"))
   .catch(err => console.error("Database connection failed:", err));
 
